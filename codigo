@@ -1,1 +1,115 @@
 print("prueba")
+
+ejercicio 1
+import yfinance as yf
+import pandas as pd
+
+# Descargar datos de Tesla usando yfinance
+tesla = yf.Ticker("TSLA")
+
+# Obtener histórico (por ejemplo, 5 años)
+tesla_data = tesla.history(period="5y")
+
+# Restablecer el índice para que 'Date' sea una columna
+tesla_data.reset_index(inplace=True)
+
+# Visualizar las primeras 5 filas
+print(tesla_data.head())
+
+ejercicio 2 
+from yahooquery import Ticker
+import pandas as pd
+
+# Crear objeto Tesla
+tsla = Ticker("TSLA")
+
+# Extraer datos de ingresos (financial data)
+income_statement = tsla.income_statement(frequency="quarterly")
+
+# Filtrar solo columnas relevantes
+tesla_revenue = income_statement.reset_index()[["asOfDate", "TotalRevenue"]]
+
+# Renombrar columnas
+tesla_revenue.columns = ["Date", "Revenue"]
+
+# Mostrar las últimas 5 filas
+print(tesla_revenue.tail())
+
+ejercicio 3 
+import yfinance as yf
+import pandas as pd
+
+# Descargar datos de GameStop usando yfinance
+gme = yf.Ticker("GME")
+
+# Obtener histórico (por ejemplo, últimos 5 años)
+gme_data = gme.history(period="5y")
+
+# Restablecer el índice para que 'Date' sea una columna
+gme_data.reset_index(inplace=True)
+
+# Visualizar las primeras 5 filas
+print(gme_data.head())
+
+ejercicio 4
+import pandas as pd
+import requests
+from bs4 import BeautifulSoup
+
+# URL
+url = "https://www.macrotrends.net/stocks/charts/GME/gamestop/revenue"
+
+# Obtener el contenido HTML
+html_data = requests.get(url).text
+
+# Parsear HTML
+soup = BeautifulSoup(html_data, "html.parser")
+
+# Extraer todas las tablas
+tables = pd.read_html(url)
+
+# Buscar la tabla correcta
+for table in tables:
+    if "GameStop Quarterly Revenue" in table.columns[0]:
+        gme_revenue = table
+        break
+
+# Limpiar datos
+gme_revenue.columns = ["Date", "Revenue"]
+gme_revenue = gme_revenue.dropna()
+gme_revenue = gme_revenue[gme_revenue["Revenue"] != ""]
+gme_revenue["Revenue"] = gme_revenue["Revenue"].astype(str).str.replace('[\$,]', '', regex=True)
+gme_revenue["Revenue"] = pd.to_numeric(gme_revenue["Revenue"], errors='coerce')
+gme_revenue = gme_revenue.dropna(subset=["Revenue"])
+
+# Mostrar las últimas 5 filas
+print(gme_revenue.tail())
+ejericio 5 
+import matplotlib.pyplot as plt
+
+def make_graph(data, title):
+    plt.figure(figsize=(12,6))
+    plt.plot(data['Date'], data['Close'], color='blue')
+    plt.title(title, fontsize=16)
+    plt.xlabel('Fecha')
+    plt.ylabel('Precio de Cierre (USD)')
+    plt.grid(True)
+    plt.show()
+
+# Llamar a la función para Tesla
+make_graph(tesla_data, "Precio de las acciones de Tesla (TSLA)")
+ejericio 6 
+import matplotlib.pyplot as plt
+
+# Definir la función make_graph
+def make_graph(data, title):
+    plt.figure(figsize=(12,6))
+    plt.plot(data['Date'], data['Close'], color='blue', linewidth=2)
+    plt.title(title, fontsize=16)
+    plt.xlabel('Fecha', fontsize=12)
+    plt.ylabel('Precio de Cierre (USD)', fontsize=12)
+    plt.grid(alpha=0.3)
+    plt.show()
+
+# Llamar la función para Tesla
+make_graph(tesla_data, "Precio de las acciones de Tesla (TSLA)")
